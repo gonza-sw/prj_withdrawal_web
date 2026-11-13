@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banca en Línea - Gestión de Cuenta</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
+          sans-serif;
+      }
+      body {
+        background-color: #f0f2f5;
+        color: #1f2937;
+        margin: 0;
+        padding: 0;
+      }
+
+      .navbar {
+        background-color: #1e293b;
+        color: #ffffff;
+        padding: 16px 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
+      .navbar-brand {
+        font-size: 19px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+      .navbar-user {
+        font-size: 14px;
+        color: #cbd5e1;
+      }
+      .navbar-user strong {
+        color: #ffffff;
+      }
+
+      .container {
+        max-width: 1060px;
+        margin: 28px auto;
+        padding: 0 20px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 22px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        margin-bottom: 20px;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 12px;
+        margin-bottom: 16px;
+      }
+      .card-header h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+      }
+
+      .balance-panel {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 18px;
+      }
+      .balance-label {
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .balance-amount {
+        font-size: 30px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-top: 4px;
+      }
+
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: #475569;
+        margin-bottom: 6px;
+      }
+      input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 14px;
+        margin-bottom: 14px;
+        transition: border-color 0.2s;
+      }
+      input:focus {
+        outline: none;
+        border-color: #2563eb;
+      }
+
+      .btn-row {
+        display: flex;
+        gap: 10px;
+      }
+      button {
+        padding: 10px 14px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .btn-deposit {
+        flex: 1;
+        background-color: #16a34a;
+        color: #ffffff;
+      }
+      .btn-deposit:hover {
+        background-color: #15803d;
+      }
+      .btn-withdraw {
+        flex: 1;
+        background-color: #dc2626;
+        color: #ffffff;
+      }
+      .btn-withdraw:hover {
+        background-color: #b91c1c;
+      }
+      .btn-secondary {
+        width: 100%;
+        background-color: #334155;
+        color: #ffffff;
+      }
+      .btn-secondary:hover {
+        background-color: #1e293b;
+      }
+      .btn-export {
+        background-color: #f1f5f9;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .btn-export:hover {
+        background-color: #e2e8f0;
+      }
+
+      .msg-box {
+        margin-top: 14px;
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        display: none;
+      }
+      .msg-box.EXITO {
+        display: block;
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+      }
+      .msg-box.FALLO {
+        display: block;
+        background: #fef9c3;
+        color: #854d0e;
+        border: 1px solid #fef08a;
+      }
+      .msg-box.ERROR {
+        display: block;
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+      }
+      th {
+        text-align: left;
+        padding: 10px 12px;
+        background-color: #f8fafc;
+        color: #475569;
+        font-weight: 600;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      .tx-detail {
+        display: block;
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 2px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 11.5px;
+        font-weight: 600;
+      }
+      .badge.EXITO {
+        background-color: #dcfce7;
+        color: #166534;
+      }
+      .badge.FALLO {
+        background-color: #fef9c3;
+        color: #854d0e;
+      }
+      .badge.ERROR {
+        background-color: #fee2e2;
+        color: #991b1b;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 36px 16px;
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      @media (max-width: 820px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="navbar-brand">Banca Digital</div>
+      <div class="navbar-user" id="navbar-user">
+        Titular: <strong>Alice</strong>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="layout">
+        <!-- Columna Izquierda -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <h2>Operaciones de Cuenta</h2>
+            </div>
+
+            <div class="balance-panel">
+              <div class="balance-label">Saldo Disponible</div>
+              <div class="balance-amount" id="saldo-display">234.56 €</div>
+            </div>
+
+            <label for="monto">Monto (€)</label>
+            <input type="number" id="monto" step="0.01" placeholder="0.00" />
+
+            <div class="btn-row">
+              <button class="btn-deposit" onclick="ejecutarOperacion('ABONO')">
+                Abonar
+              </button>
+              <button
+                class="btn-withdraw"
+                onclick="ejecutarOperacion('RETIRO')"
+              >
+                Retirar
+              </button>
+            </div>
+
+            <div id="alerta" class="msg-box"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Cambiar Titular / Nueva Cuenta</h2>
+            </div>
+            <label for="nuevo-nombre">Nombre del titular</label>
+            <input
+              type="text"
+              id="nuevo-nombre"
+              placeholder="Ej. Adrián Torres"
+            />
+
+            <label for="nuevo-saldo">Saldo inicial (€)</label>
+            <input
+              type="number"
+              id="nuevo-saldo"
+              step="0.01"
+              placeholder="Ej. 150.00"
+            />
+
+            <button class="btn-secondary" onclick="reiniciarCuenta()">
+              Abrir / Reiniciar Cuenta
+            </button>
+          </div>
+        </div>
+
+        <!-- Columna Derecha -->
+        <div class="card">
+          <div class="card-header">
+            <h2>Historial de Movimientos</h2>
+            <button class="btn-export" onclick="descargarJSON()">
+              Exportar JSON
+            </button>
+          </div>
+
+          <div id="tabla-contenedor">
+            <div class="empty-state">
+              Aún no se han registrado movimientos en esta cuenta.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let transaccionesActuales = [];
+
+      function formatearHora(isoString) {
+        const fecha = new Date(isoString);
+        return fecha.toLocaleTimeString("es-PE", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      }
+
+      function traducirEstado(estado) {
+        if (estado === "EXITO") return "Exitoso";
+        if (estado === "FALLO") return "Rechazado";
+        return "Error";
+      }
+
+      function renderizarTabla(transacciones) {
+        const contenedor = document.getElementById("tabla-contenedor");
+        if (!transacciones || transacciones.length === 0) {
+          contenedor.innerHTML =
+            '<div class="empty-state">Aún no se han registrado movimientos en esta cuenta.</div>';
+          return;
+        }
+
+        // Mostrar los movimientos más recientes primero
+        const listaOrdenada = [...transacciones].reverse();
+
+        let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Hora</th>
+              <th>Movimiento</th>
+              <th>Monto</th>
+              <th>Saldo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+        listaOrdenada.forEach((tx) => {
+          const esAbono = tx.tipo === "ABONO";
+          const signo = esAbono ? "+" : "-";
+          const colorMonto =
+            tx.estado === "EXITO"
+              ? esAbono
+                ? "#16a34a"
+                : "#0f172a"
+              : "#64748b";
+          const tipoTexto = esAbono ? "Abono" : "Retiro";
+
+          html += `
+          <tr>
+            <td>${tx.id}</td>
+            <td>${formatearHora(tx.timestamp)}</td>
+            <td>
+              <strong>${tipoTexto}</strong>
+              <span class="tx-detail">${tx.detalle}</span>
+            </td>
+            <td style="font-weight: 600; color: ${colorMonto};">${signo}${tx.monto.toFixed(2)} €</td>
+            <td>${tx.saldo_restante.toFixed(2)} €</td>
+            <td><span class="badge ${tx.estado}">${traducirEstado(tx.estado)}</span></td>
+          </tr>
+        `;
+        });
+
+        html += "</tbody></table>";
+        contenedor.innerHTML = html;
+      }
+
+      function actualizarVista(data) {
+        transaccionesActuales = data.transacciones || [];
+        document.getElementById("navbar-user").innerHTML =
+          `Titular: <strong>${data.nombre}</strong>`;
+        document.getElementById("saldo-display").textContent =
+          `${data.saldo.toFixed(2)} €`;
+        renderizarTabla(transaccionesActuales);
+
+        const alerta = document.getElementById("alerta");
+        if (data.mensaje) {
+          alerta.textContent = data.mensaje;
+          alerta.className = `msg-box ${data.tipo_mensaje}`;
+        } else {
+          alerta.className = "msg-box";
+        }
+      }
+
+      async function cargarEstado() {
+        const res = await fetch("/api/estado");
+        const data = await res.json();
+        actualizarVista(data);
+      }
+
+      async function ejecutarOperacion(tipo) {
+        const montoInput = document.getElementById("monto");
+        const monto = parseFloat(montoInput.value);
+        if (isNaN(monto)) {
+          alert("Por favor, ingresa un monto válido.");
+          return;
+        }
+
+        const res = await fetch("/api/operacion", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tipo, monto }),
+        });
+        const data = await res.json();
+        actualizarVista(data);
+        montoInput.value = "";
+      }
+
+      async function reiniciarCuenta() {
+        const nombre = document.getElementById("nuevo-nombre").value.trim();
+        const saldo_inicial = parseFloat(
+          document.getElementById("nuevo-saldo").value,
+        );
+        if (!nombre || isNaN(saldo_inicial)) {
+          alert("Ingresa el nombre del titular y el saldo inicial.");
+          return;
+        }
+
+        const res = await fetch("/api/reiniciar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nombre, saldo_inicial }),
+        });
+        const data = await res.json();
+        actualizarVista(data);
+        document.getElementById("nuevo-nombre").value = "";
+        document.getElementById("nuevo-saldo").value = "";
+      }
+
+      function descargarJSON() {
+        const blob = new Blob(
+          [JSON.stringify(transaccionesActuales, null, 2)],
+          { type: "application/json" },
+        );
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "historial_transacciones.json";
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      cargarEstado();
+    </script>
+  </body>
+</html>
